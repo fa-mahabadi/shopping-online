@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.models import Group
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -12,15 +13,17 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
         if user.is_supervisor:
-            supervisor_group, created = Group.objects.get_or_create(name='SUPERVISOR')
+            supervisor_group, created = Group.objects.get_or_create(name="SUPERVISOR")
             user.groups.add(supervisor_group)
 
         if user.is_product_manager:
-            product_manager_group, created = Group.objects.get_or_create(name='PRODUCT_MANAGER')
+            product_manager_group, created = Group.objects.get_or_create(
+                name="PRODUCT_MANAGER"
+            )
             user.groups.add(product_manager_group)
 
         if user.is_operator:
-            operator_group, created = Group.objects.get_or_create(name='OPERATOR')
+            operator_group, created = Group.objects.get_or_create(name="OPERATOR")
             user.groups.add(operator_group)
         return user
 
@@ -38,23 +41,30 @@ class CustomUserManager(BaseUserManager):
 
 
 class MyUser(AbstractUser):
-    
-    email = models.EmailField(unique=True)
-    is_supervisor = models.BooleanField(default=False)
-    is_product_manager = models.BooleanField(default=False)
+    email = models.EmailField(unique=True, verbose_name="ایمیل")
+    is_supervisor = models.BooleanField(default=False, verbose_name="ناظر")
+    is_product_manager = models.BooleanField(default=False, verbose_name="مدیر محصول")
     # operator is superuser
-    is_operator = models.BooleanField(default=False)
-    USERNAME_FIELD = 'email'
+    is_operator = models.BooleanField(default=False, verbose_name="اپراتور")
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
 
     def __str__(self):
         return self.email
+    class Meta:
+        verbose_name_plural = "  کاربران  "
+        verbose_name = " کاربر"
 
 
 class Address(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="addresses")
-    city = models.CharField(max_length=100)
-    province = models.CharField(max_length=100)
-    detail = models.CharField(max_length=100)
-    zipcode = models.CharField(max_length=12)
+    user = models.ForeignKey(
+        MyUser, on_delete=models.CASCADE, related_name="addresses", verbose_name="کاربر"
+    )
+    city = models.CharField(max_length=100, verbose_name="شهر")
+    province = models.CharField(max_length=100, verbose_name="استان")
+    detail = models.CharField(max_length=100, verbose_name="آدرس تکمیلی")
+    zipcode = models.CharField(max_length=12, verbose_name="کدپستی")
+    class Meta:
+        verbose_name_plural = "آدرس ها  "
+        verbose_name = " آدرس"
