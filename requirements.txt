@@ -1,0 +1,6 @@
+django
+venv
+pillow
+celery 
+PyJWT
+redis
