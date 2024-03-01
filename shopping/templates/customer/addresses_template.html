@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address List</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Address List</h1>
+    <ul id="address-list">
+        <!-- Addresses will be inserted here dynamically -->
+    </ul>
+    <form id="address-update-form">
+        <!-- Address fields -->
+        <button type="submit">Update Address</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Function to fetch address data from the API
+            function fetchAddressList() {
+                $.ajax({
+                    url: "{% url 'address_list' %}",  // Replace 'address_list' with the name of your URL pattern
+                    type: 'GET',
+                    success: function(data) {
+                        displayAddressList(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching address list:', error);
+                    }
+                });
+            }
+
+            // Function to display the address list
+            function displayAddressList(addresses) {
+                const addressList = $('#address-list');
+                addressList.empty();  // Clear previous content
+
+                if (addresses.length > 0) {
+                    $.each(addresses, function(index, address) {
+                        const li = $('<li>').text(`${address.city}, ${address.province} - ${address.detail}`);
+                        addressList.append(li);
+                    });
+                } else {
+                    const li = $('<li>').text('No addresses found.');
+                    addressList.append(li);
+                }
+            }
+
+            // Fetch address list when the page loads
+            fetchAddressList();
+        });
+        $('#address-update-form').submit(function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        var url = "{% url 'update_address' pk=address.pk %}";
+        $.ajax({
+            type: 'PUT',
+            url: url,
+            data: formData,
+            success: function(data) {
+                // Handle success
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+            }
+        });
+    });
+    </script>
+</body>
+</html>

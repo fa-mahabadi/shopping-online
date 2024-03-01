@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Addresses</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Set up jQuery to send CSRF tokens with AJAX requests
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                // Check if the request is cross-domain or not
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+
+<h1>User Addresses</h1>
+
+<!-- Textbox to display selected address -->
+<div>
+    <h2>Selected Address</h2>
+    <textarea id="selected-address" rows="4" cols="50" readonly></textarea>
+</div>
+
+<div id="address-list">
+    <!-- Addresses will be inserted here dynamically -->
+</div>
+
+<div id="new-address-form">
+    <h2>Add New Address</h2>
+    <div>
+        <label for="city">City:</label>
+        <input type="text" id="city">
+    </div>
+    <div>
+        <label for="province">Province:</label>
+        <input type="text" id="province">
+    </div>
+    <div>
+        <label for="detail">Detail:</label>
+        <input type="text" id="detail">
+    </div>
+    <div>
+        <label for="zipcode">Zipcode:</label>
+        <input type="text" id="zipcode">
+    </div>
+    <button id="add-address-btn">Add Address</button>
+</div>
+
+<script>
+    $(document).ready(function() {
+        fetchAddresses();
+
+        // Handle click on delete button
+        $(document).on('click', '.delete-address-btn', function() {
+            var addressId = $(this).data('address-id');
+            deleteAddress(addressId);
+        });
+
+        // Handle click on update button
+        $(document).on('click', '.update-address-btn', function() {
+            var addressId = $(this).data('address-id');
+            var addressContent = $('#address-' + addressId).text().trim();
+            
+            // Split the address content into its parts
+            var addressParts = addressContent.split(/,\s+/);
+            var city = addressParts[0];
+            var provinceAndDetail = addressParts[1].split(/ - /);
+            var province = provinceAndDetail[0];
+            var detailAndZipcode = provinceAndDetail[1].split(/- /);
+            var detail = detailAndZipcode[0];
+            var zipcode = detailAndZipcode[1];
+        
+            // Send the updated address parts in the AJAX request
+            updateAddress(addressId, city, province, detail, zipcode);
+        });
+
+        // Handle click on create new address button
+        $('#add-address-btn').click(function() {
+            var city = $('#city').val();
+            var province = $('#province').val();
+            var detail = $('#detail').val();
+            var zipcode = $('#zipcode').val(); // Retrieve zipcode value
+            addAddress(city, province, detail, zipcode);
+        });
+
+        // Event listener for address option selection
+        $(document).on('change', 'input[name="address-option"]', function() {
+            var selectedAddress = $(this).next('.address-line').text().trim(); // Get the text content of the next sibling with class 'address-line'
+            $('#selected-address').val(selectedAddress); // Update the textarea value with selected address details
+        });
+    });
+
+    function fetchAddresses() {
+        $.ajax({
+            url: '/customer/address/api/', 
+            type: 'GET',
+            success: function(data) {
+                var addressList = $('#address-list');
+                addressList.empty();  // Clear previous content
+                if (data.length > 0) {
+                    $.each(data, function(index, address) {
+                        var addressLine = `<span class="address-line" id="address-${address.id}" contenteditable="true">${address.city}, ${address.province} - ${address.detail}- ${address.zipcode}</span>`;
+                        var deleteButton = `<button class="delete-address-btn" data-address-id="${address.id}">Delete</button>`;
+                        var updateButton = `<button class="update-address-btn" data-address-id="${address.id}">Update</button>`;
+                        var optionButton = `<input type="radio" name="address-option" data-address-id="${address.id}">`; // Add option button
+                        addressList.append(`<div>${optionButton} ${addressLine} ${deleteButton} ${updateButton}</div>`);
+                    });
+                } else {
+                    addressList.append('<div>No addresses found.</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching addresses:', error);
+            }
+        });
+    }
+
+    function deleteAddress(addressId) {
+        $.ajax({
+            url: `/customer/address/api/${addressId}/`,
+            type: 'DELETE',
+            success: function() {
+                fetchAddresses();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting address:', error);
+            }
+        });
+    }
+
+    function updateAddress(addressId, city, province, detail, zipcode) {
+        $.ajax({
+            url: `/customer/address/api/${addressId}/`,
+            type: 'PUT',
+            data: {
+                city: city,
+                province: province,
+                detail: detail,
+                zipcode: zipcode
+            },
+            success: function(data) {
+                fetchAddresses();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating address:', error);
+            }
+        });
+    }
+
+    function addAddress(city, province, detail, zipcode) {
+        $.ajax({
+            url: '/customer/address/api/',
+            type: 'POST',
+            data: {
+                city: city,
+                province: province,
+                detail: detail,
+                zipcode: zipcode
+            },
+            success: function() {
+                fetchAddresses();
+                $('#city').val('');
+                $('#province').val('');
+                $('#detail').val('');
+                $('#zipcode').val('');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error adding address:', error);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
