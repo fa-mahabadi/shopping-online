@@ -1,41 +1,51 @@
 {% extends 'base.html'%}
 {% load static %}
+{% load custom_tags %}
 {% block content %}
 <div class="container py-5">
     <div class="row">
 
-        
+
 
         <div class="col-lg-9 p-2">
-        
+
             <div class="row">
                 {% for product in products %}
                 <div class="col-md-4">
                     <div class="card mb-4 product-wap rounded-0">
                         <div class="card rounded-0">
                             {% for image in images %}
-                                {% if image.product == product %}
-                                <img src="{{ image.image.url }}" alt="{{ product.name }} Image">
-                                {% endif %}
-                                {% endfor %}
-                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                            {% if image.product == product  %}
+                           
+                            <img src="{{ image.image.url }}" alt="{{ product.name }} Image">
+                            {% endif %}
+                           
+                            {% endfor %}
+                            <div
+                                class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                 <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white" href="shop-single.html"><i class="far fa-heart"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.html"><i class="far fa-eye"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.html"><i class="fas fa-cart-plus"></i></a></li>
+                                    <li><a class="btn btn-success text-white" href="shop-single.html"><i
+                                                class="far fa-heart"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.html"><i
+                                                class="far fa-eye"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.html"><i
+                                                class="fas fa-cart-plus"></i></a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="card-body">
-                            <a href="shop-single.html" class="h3 text-decoration-none">{{product.name}}</a>
+                            <a href="{% url 'product_detail' pk=product.pk %}" class="h3 text-decoration-none">{{product.name}}</a>
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                <li>M/L/X/XL</li>
                                 <li class="pt-2">
                                     <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
+                                    <span
+                                        class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
+                                    <span
+                                        class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
+                                    <span
+                                        class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
+                                    <span
+                                        class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
                                 </li>
                             </ul>
                             <ul class="list-unstyled d-flex justify-content-center mb-1">
@@ -52,16 +62,18 @@
                     </div>
                 </div>
                 {% endfor %}
-               
-                
+
+
             </div>
             <div div="row">
                 <ul class="pagination pagination-lg justify-content-end">
                     <li class="page-item disabled">
-                        <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#" tabindex="-1">1</a>
+                        <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#"
+                            tabindex="-1">1</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="#">2</a>
+                        <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark"
+                            href="#">2</a>
                     </li>
                     <li class="page-item">
                         <a class="page-link rounded-0 shadow-sm border-top-0 border-left-0 text-dark" href="#">3</a>
@@ -69,45 +81,23 @@
                 </ul>
             </div>
         </div>
-        <div class="col-lg-3">
-            <h1 class="h2 pb-4">دسته بندی</h1>
+        <div class="col-lg-2" dir="rtl">
+            <h1 class="h2 pb-4">فیلتر</h1>
             <ul class="list-unstyled templatemo-accordion">
                 <li class="pb-3">
                     <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                        جنسیت
+                        دسته بندی
                         <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
                     </a>
                     <ul class="collapse show list-unstyled pl-3">
-                        <li><a class="text-decoration-none" href="#">مردانه</a></li>
-                        <li><a class="text-decoration-none" href="#">زنانه</a></li>
-                        <li><a class="text-decoration-none" href="#">بچه گانه</a></li>
-                    </ul>
-                </li>
-                <li class="pb-3">
-                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                        Sale
-                        <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-                    </a>
-                    <ul id="collapseTwo" class="collapse list-unstyled pl-3">
-                        <li><a class="text-decoration-none" href="#">Sport</a></li>
-                        <li><a class="text-decoration-none" href="#">Luxury</a></li>
-                    </ul>
-                </li>
-                <li class="pb-3">
-                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                        Product
-                        <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-                    </a>
-                    <ul id="collapseThree" class="collapse list-unstyled pl-3">
-                        <li><a class="text-decoration-none" href="#">Bag</a></li>
-                        <li><a class="text-decoration-none" href="#">Sweather</a></li>
-                        <li><a class="text-decoration-none" href="#">Sunglass</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'man_category'%}">مردانه</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'woman_category'%}">زنانه</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'child_category'%}">بچه گانه</a></li>
                     </ul>
                 </li>
             </ul>
+
         </div>
     </div>
 </div>
 {% endblock %}
-
-            

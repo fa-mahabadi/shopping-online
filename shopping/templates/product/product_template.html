@@ -1,0 +1,87 @@
+{% extends 'base.html'%}
+{% load static %}
+{% block head %}
+    {{ block.super }}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block content %}
+
+
+<h3 class="mb-4 pt-5 text-center">لیست سفارشات</h3>
+<div calss="container" id="shopping_cart_data" style="padding: 30px;"></div>
+<div class="d-flex justify-content-center align-items-center">
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-success btn-lg my-4" name="submit" value="addtocart">تایید و تکمیل سفارش</button>
+</form>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "/product/api/", 
+            type: "GET",
+            success: function (response) {
+                var shoppingCartData = response.shopping_cart;
+                var shoppingCartHtml = "<div class='table-responsive'><table class='table table-bordered table-hover'><thead class='thead-dark'><tr><th scope='col'> </th><th style='text-align: center;' scope='col'>نام محصول</th><th style='text-align: center;' scope='col'>قیمت</th><th style='text-align: center;' scope='col'>رنگ</th><th style='text-align: center;' scope='col'>سایز</th><th style='text-align: center;' scope='col'>تعداد</th></tr></thead><tbody>";
+                for (var key in shoppingCartData) {
+                    if (shoppingCartData.hasOwnProperty(key)) {
+                        var item = shoppingCartData[key];
+                        shoppingCartHtml += "<tr><td><img src='" + item.image + "' alt='" + item.name + "' style='align: center; width:100px;height=100px;'></td><td style='text-align: center;'>" + item.name + "</td><td style='text-align: center;'>" + item.price + "</td><td style='text-align: center;'>" + item.color + "</td><td style='text-align: center;'>" + item.size + "</td><td style='text-align: center;'> <button class='btn btn-sm btn-primary increase-quantity' data-id='" + item.id + "'>+</button><span class='quantity-display'>" + item.quantity + "</span> <button class='btn btn-sm btn-primary decrease-quantity' data-id='" + item.id + "'>-</button></td></tr>";
+                    }
+                }
+                shoppingCartHtml += "</tbody></table></div>";
+                $('#shopping_cart_data').html(shoppingCartHtml);
+                // Event listener for creasing quantity
+                $('.increase-quantity').on('click', function () {
+                    var productId = $(this).data('id');
+                    var quantityDisplay = $(this).closest('tr').find('.quantity-display');
+                    var currentQuantity = parseInt(quantityDisplay.text());
+                    var newQuantity = currentQuantity + 1;
+                    updateQuantityInCookie(productId, newQuantity);
+                    quantityDisplay.text(newQuantity);
+                });
+
+                // Event listener for decreasing quantity
+                $('.decrease-quantity').on('click', function () {
+                    var productId = $(this).data('id');
+                    var quantityDisplay = $(this).closest('tr').find('.quantity-display');
+                    var currentQuantity = parseInt(quantityDisplay.text());
+                    var newQuantity = Math.max(currentQuantity - 1, 1); 
+                    updateQuantityInCookie(productId, newQuantity);
+                    quantityDisplay.text(newQuantity);
+                });
+            },
+        error: function (xhr, status, error) {
+            console.error(error);
+        }
+    });
+
+        function updateQuantityInCookie(productId, newQuantity) {
+        $.ajax({
+            url: '/update_quantity/',  // URL to your Django view to update the quantity
+            type: 'POST',
+            data: {
+                'product_id': productId,
+                'quantity': newQuantity
+            },
+            success: function (response) {
+            // Handle success response if needed
+        },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
