@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+  <!-- Display order history -->
+  <h3 class="text-center p-4"> سفارشات</h3>
+  <div class="table-responsive p-4">
+    <table class="table table-striped">
+      <thead class="thead-dark ">
+        <tr>
+          <th>آدرس</th>
+          <th> کد تخفیف</th>
+          <th>وضعیت</th>
+          <th > تاریخ سفارش</th>
+        </tr>
+      </thead>
+      <tbody id="order-list"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Fetch order history data using JavaScript
+    fetch('/order/create/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', // For Django to identify it as an AJAX request
+        'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if needed
+      }
+    })
+    fetch('/order/create/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', // For Django to identify it as an AJAX request
+        'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if needed
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch order history');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Handle the received data and render it in the template
+      const orders = data;
+      const orderList = document.getElementById('order-list');
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+       
+        // <td>{{ order.address.city }}-{{ order.address.neighborhood }}-{{ order.address.street }}</td>
+
+        row.innerHTML = `
+          <td>${order.address}</td>
+          <td>${order.discount_code}</td>
+          <td>${order.status}</td>
+          <td>${order.created_at}</td>
+        `;
+        orderList.appendChild(row);
+      });
+    })
+    .catch(error => console.error('Error fetching order history:', error));
+  </script>
+{% endblock %}
