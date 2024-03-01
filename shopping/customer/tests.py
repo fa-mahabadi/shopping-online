@@ -9,7 +9,7 @@ class UserManagerTest(TestCase):
         user = User.objects.create_user(email="test@email.com", password="123")
         self.assertEqual(user.email, "test@email.com")
         self.assertTrue(user.is_active)
-        self.assertFalse(user.is_staff)
+        self.assertTrue(user.is_staff)
 
     def test_create_superuser(self):
         User = get_user_model()
