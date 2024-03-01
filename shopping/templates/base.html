@@ -1,28 +1,55 @@
 {% load static %}
+{% load custom_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>فروشگاه ترمه </title>
+    {% block head %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
 
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/templatemo.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
-    
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Load fonts style after rendering the layout styles -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="{% static 'assets/css/fontawesome.min.css' %}">
-    <!--
-    
+    <!-- jquery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+    {% endblock %}
 
--->
+    <style>
+        ul,
+        li {
+            list-style-type: none;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Set up jQuery to send CSRF tokens with AJAX requests
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                // Check if the request is cross-domain or not
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                }
+            }
+        });
+        </script>
 </head>
 
-<body >
+<body>
     <!-- Start Top Nav -->
     <nav class="navbar navbar-expand-lg bg-dark navbar-light d-none d-lg-block" id="templatemo_nav_top">
         <div class="container text-light">
@@ -75,37 +102,31 @@
                                 <button class="border-0 bg-white" type="submit">خروج</button>
                             </form>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">خروج  </a>
-                        </li> -->
+                        
                         {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">ورود </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">ثبت نام </a>
+                            <a class="nav-link" href="{% url 'register' %}">ثبت نام </a>
                         </li>
-                        
-                        
-                        
+
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="#"> فروش ویژه </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"> بچه گانه </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"> مردانه </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">زنانه</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">خانه </a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                دسته بندی</a>
+                            <div class="dropdown-menu" dir="rtl" aria-labelledby="navbarDropdown">
+                                {% show_categories %}</div>
                         </li>
                     </ul>
                 </div>
+
+
                 <div class="navbar align-self-center d-flex">
                     <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
                         <div class="input-group">
@@ -119,7 +140,7 @@
                         data-bs-target="#templatemo_search">
                         <i class="fa fa-fw fa-search text-dark mr-2"></i>
                     </a>
-                    <a class="nav-icon position-relative text-decoration-none" href="#">
+                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'product_template' %}">
                         <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                         <span
                             class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">1</span>
@@ -154,117 +175,116 @@
         </div>
     </div>
 
-    {%block content %}
+    {% block content %}
 
-    {%endblock content%}  
-      <!-- Start Footer -->
-            <footer class=" bg-dark p-5" id="tempaltemo_footer ">
-                <div class="container text-center">
-                    <div class="row">
+    {% endblock %}
+    <!-- Start Footer -->
+    <footer class=" bg-dark p-5" id="tempaltemo_footer ">
+        <div class="container text-center">
+            <div class="row">
 
-                        <div class="col-md-4 pt-5">
-                            <h2 class="h2 text-success border-bottom pb-3 border-light logo">فروشگاه ترمه</h2>
-                            <ul class="list-unstyled text-light footer-link-list">
-                                <li>
+                <div class="col-md-4 pt-5">
+                    <h2 class="h2 text-success border-bottom pb-3 border-light logo">فروشگاه ترمه</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li>
 
-                                    میزبان صدای گرمتان هستیم
-                                </li>
-                                <li>
-                                    <i class="fa fa-phone fa-fw"></i>
-                                    <a class="text-decoration-none" href="#">021-45252</a>
-                                </li>
-                                <li>
-                                    <i class="fa fa-envelope fa-fw"></i>
-                                    <a class="text-decoration-none" href="mailto:info@company.com">terme@company.com</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4 pt-5 ">
-                            <h2 class="h2 text-light border-bottom pb-3 border-light">اطلاعات بیشتر</h2>
-                            <ul class="list-unstyled text-light footer-link-list">
-                                <li><a class="text-decoration-none" href="#">خانه</a></li>
-                                <li><a class="text-decoration-none" href="#">تماس با ما </a></li>
-                                <li><a class="text-decoration-none" href="#">درباره ما</a></li>
-                                <li><a class="text-decoration-none" href="#">قوانین و مقررات</a></li>
-                            </ul>
-                        </div>
+                            میزبان صدای گرمتان هستیم
+                        </li>
+                        <li>
+                            <i class="fa fa-phone fa-fw"></i>
+                            <a class="text-decoration-none" href="#">021-45252</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-envelope fa-fw"></i>
+                            <a class="text-decoration-none" href="mailto:info@company.com">terme@company.com</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4 pt-5 ">
+                    <h2 class="h2 text-light border-bottom pb-3 border-light">اطلاعات بیشتر</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li><a class="text-decoration-none" href="#">خانه</a></li>
+                        <li><a class="text-decoration-none" href="#">تماس با ما </a></li>
+                        <li><a class="text-decoration-none" href="#">درباره ما</a></li>
+                        <li><a class="text-decoration-none" href="#">قوانین و مقررات</a></li>
+                    </ul>
+                </div>
 
-                        <div class="col-md-4 pt-5 ">
-                            <h2 class="h2 text-light border-bottom pb-3 border-light">محصولات</h2>
-                            <ul class="list-unstyled text-light footer-link-list">
-                                <li><a class="text-decoration-none" href="#">ترمه</a></li>
-                                <li><a class="text-decoration-none" href="#">لباس زنانه</a></li>
-                                <li><a class="text-decoration-none" href="#">لباس مردانه</a></li>
-                                <li><a class="text-decoration-none" href="#"> لباس بچه گانه</a></li>
+                <div class="col-md-4 pt-5 ">
+                    <h2 class="h2 text-light border-bottom pb-3 border-light">محصولات</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        <li><a class="text-decoration-none" href="#">ترمه</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'woman_category'%}">لباس زنانه</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'man_category'%}">لباس مردانه</a></li>
+                        <li><a class="text-decoration-none" href="{% url 'child_category'%}"> لباس بچه گانه</a></li>
 
-                            </ul>
-                        </div>
-
-
-
-                    </div>
-
-                    <div class="row text-light mb-4">
-                        <div class="col-12 mb-3">
-                            <div class="w-100 my-3 border-top border-light"></div>
-                        </div>
-                        <div class="col-auto me-auto">
-                            <ul class="list-inline text-left footer-icons">
-                                <li class="list-inline-item border border-light rounded-circle text-center">
-                                    <a class="text-light text-decoration-none" target="_blank"
-                                        href="http://facebook.com/"><i class="fab fa-facebook-f fa-lg fa-fw"></i></a>
-                                </li>
-                                <li class="list-inline-item border border-light rounded-circle text-center">
-                                    <a class="text-light text-decoration-none" target="_blank"
-                                        href="https://www.instagram.com/"><i
-                                            class="fab fa-instagram fa-lg fa-fw"></i></a>
-                                </li>
-                                <li class="list-inline-item border border-light rounded-circle text-center">
-                                    <a class="text-light text-decoration-none" target="_blank"
-                                        href="https://twitter.com/"><i class="fab fa-twitter fa-lg fa-fw"></i></a>
-                                </li>
-                                <li class="list-inline-item border border-light rounded-circle text-center">
-                                    <a class="text-light text-decoration-none" target="_blank"
-                                        href="https://www.linkedin.com/"><i class="fab fa-linkedin fa-lg fa-fw"></i></a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-auto">
-                            <label class="sr-only" for="subscribeEmail">Email address</label>
-                            <div class="input-group mb-2">
-                                <input type="text" class="form-control bg-dark border-light" id="subscribeEmail"
-                                    placeholder="Email address">
-                                <div class="input-group-text btn-success text-light">Subscribe</div>
-                            </div>
-                        </div>
-                    </div>
+                    </ul>
                 </div>
 
 
 
-                <div class="w-100 bg-black py-3">
-                    <div class="container">
-                        <div class="row pt-2">
-                            <div class="col-12">
-                                <p class="text-left text-light">
-                                    Copyright &copy; 2024 terme
+            </div>
 
-                                </p>
-                            </div>
-                        </div>
+            <div class="row text-light mb-4">
+                <div class="col-12 mb-3">
+                    <div class="w-100 my-3 border-top border-light"></div>
+                </div>
+                <div class="col-auto me-auto">
+                    <ul class="list-inline text-left footer-icons">
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="http://facebook.com/"><i
+                                    class="fab fa-facebook-f fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank"
+                                href="https://www.instagram.com/"><i class="fab fa-instagram fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="https://twitter.com/"><i
+                                    class="fab fa-twitter fa-lg fa-fw"></i></a>
+                        </li>
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank"
+                                href="https://www.linkedin.com/"><i class="fab fa-linkedin fa-lg fa-fw"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <label class="sr-only" for="subscribeEmail">Email address</label>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control bg-dark border-light" id="subscribeEmail"
+                            placeholder="Email address">
+                        <div class="input-group-text btn-success text-light">Subscribe</div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-            </footer>
-            <!-- End Footer -->
 
-            <!-- Start Script -->
-            <script src="{% static 'assets/js/jquery-1.11.0.min.js' %}"></script>
-            <script src="{% static 'assets/js/jquery-migrate-1.2.1.min.js' %}"></script>
-            <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
-            <script src="{% static 'assets/js/templatemo.js' %}" ></script>
-            <script src="{% static 'assets/js/custom.js' %}" ></script>
-            <!-- End Script -->
+
+        <div class="w-100 bg-black py-3">
+            <div class="container">
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <p class="text-left text-light">
+                            Copyright &copy; 2024 terme
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </footer>
+    <!-- End Footer -->
+
+    <!-- Start Script -->
+    <script src="{% static 'assets/js/jquery-1.11.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/templatemo.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <!-- End Script -->
 </body>
 
 </html>
