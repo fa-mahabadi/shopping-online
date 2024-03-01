@@ -5,28 +5,20 @@ from .models import MyUser, Address
 
 @admin.register(MyUser)
 class MyUserAdmin(UserAdmin):
-    model = MyUser
-    list_display = ["email", "is_supervisor", "is_product_manager", "is_operator"]
-
-    fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        (
-            "Permissions",
-            {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                    "groups",
-                    "user_permissions",
-                )
-            },
-        ),
-        (
-            "Custom Fields",
-            {"fields": ("is_supervisor", "is_product_manager", "is_operator")},
-        ),
-    )
+    list_display = [
+        "email",
+        "is_supervisor",
+        "is_product_manager",
+        "is_operator",
+        "is_staff",
+        "is_active",
+        "is_deleted",
+    ]
+    search_fields = ("email",)
+    filter_horizontal = ()
+    list_filter = ()
+    fieldsets = ()
+    ordering = ("email",)
 
     add_fieldsets = (
         (
@@ -40,6 +32,8 @@ class MyUserAdmin(UserAdmin):
                     "is_supervisor",
                     "is_product_manager",
                     "is_operator",
+                    "is_active",
+                    "is_deleted",
                 ),
             },
         ),
@@ -48,6 +42,7 @@ class MyUserAdmin(UserAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ["user", "city", "province", "detail", "zipcode"]
+    list_display = ["user", "city", "province", "detail", "zipcode","is_active",
+                    "is_deleted",]
     search_fields = ("user", "city")
     list_filter = ("user",)
