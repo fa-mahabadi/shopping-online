@@ -47,29 +47,29 @@
 
 
     <!-- Start Categories of The Month -->
-    <section class="container py-5">
+    <section class="container ">
         <div class="row text-center pt-3">
             <div class="col-lg-6 m-auto">
-                <h1 class="h1">شگفتی های ماه </h1>
+                <h1 class="h1"> دسته بندی </h1>
 
             </div>
         </div>
         <div class="row">
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="{% static './assets/imag/images1.jpg' %}" class="rounded-circle img-fluid border"></a>
+                <a href="{% url 'man_category'%}"><img src="{% static './assets/imag/images1.jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h5 class="text-center mt-3 mb-3">لباس مردانه</h5>
-                <p class="text-center"><a class="btn btn-success">فروشگاه</a></p>
+                
             </div>
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="{% static './assets/imag/16768206464118.jpg' %}" class="rounded-circle img-fluid border"></a>
+                <a href="{% url 'woman_category'%}"><img src="{% static './assets/imag/16768206464118.jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h2 class="h5 text-center mt-3 mb-3">لباس زنانه</h2>
-                <p class="text-center"><a class="btn btn-success">فروشگاه</a></p>
+                
             </div>
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="{% static './assets/imag/4fb48420-81f0-11ee-8717-ef7161f86199.jpg' %}"
+                <a href="{% url 'child_category'%}"><img src="{% static './assets/imag/4fb48420-81f0-11ee-8717-ef7161f86199.jpg' %}"
                         class="rounded-circle img-fluid border"></a>
                 <h2 class="h5 text-center mt-3 mb-3">لباس بچه گانه</h2>
-                <p class="text-center"><a class="btn btn-success">فروشگاه</a></p>
+                
             </div>
         </div>
     </section>
@@ -85,11 +85,18 @@
                 </div>
             </div>
             <div class="row">
+                {% for product in newest_products %}
                 <div class="col-12 col-md-4 mb-4">
-                    <div class="card h-100">
-                        <a href="#">
-                            <img src="{% static './assets/imag/828e0e7a68df21645b71e9ec35b71b4b8326e0e5_1609303613.webp' %}" class="card-img-top" alt="...">
-                        </a>
+                    <div class="card  rounded-0">
+                        
+                            {% for image in images %}
+                            {% if image.product == product  %}
+                           
+                            <img src="{{ image.image.url }}" alt="{{ product.name }} Image" class="width:50%;height:50%">
+                            {% endif %}
+                           
+                            {% endfor %}
+                            
                         <div class="card-body">
                             <ul class="list-unstyled d-flex justify-content-between">
                                 <li>
@@ -99,59 +106,15 @@
                                     <i class="text-muted fa fa-star"></i>
                                     <i class="text-muted fa fa-star"></i>
                                 </li>
-                                <li class="text-muted text-right">$240.00</li>
+                                <li class="text-muted text-right">{{ product.price }}</li>
                             </ul>
-                            <a href="#" class="h2 text-decoration-none text-dark text-">سویشرت دخترانه</a>
+                            <a href="{% url 'product_detail' pk=product.pk %}" class="h5 text-decoration-none text-dark text-"> {{ product.name }}</a>
                             
                             <p class="text-muted">Reviews (24)</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card h-100">
-                        <a href="#">
-                            <img src="{% static './assets/imag/65ebe8e87812f163639fd6a172d5a74930075607_1694938790.webp' %}" class="card-img-top" alt="...">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                <li>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-muted fa fa-star"></i>
-                                    <i class="text-muted fa fa-star"></i>
-                                </li>
-                                <li class="text-muted text-right">$480.00</li>
-                            </ul>
-                            <a href="#" class="h2 text-decoration-none text-dark">سویشرت مردانه</a>
-                            
-                            <p class="text-muted">Reviews (48)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card h-100">
-                        <a href="#">
-                            <img src="{% static './assets/imag/e46d128cbc02b7a15b1a94fe79b57c36c279ed34_1630409227.webp'%}" class="card-img-top" alt="...">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                <li>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                </li>
-                                <li class="text-muted text-right">$360.00</li>
-                            </ul>
-                            <a href="#" class="h2 text-decoration-none text-dark">سویشرت پسرانه</a>
-                            
-                            <p class="text-muted">Reviews (74)</p>
-                        </div>
-                    </div>
-                </div>
-                
+                {% endfor%}
             </div>
         </div>
     </section>
