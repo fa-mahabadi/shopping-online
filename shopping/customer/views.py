@@ -188,6 +188,11 @@ class AddressDetailAPIview(APIView):
     """api view for update and delete address"""
 
     permission_classes = [IsAuthenticated]
+    
+    def get(self, request, pk):
+        address = get_object_or_404(Address, pk=pk)
+        serializer = AddressSerializer(address)
+        return Response(serializer.data)
 
     def put(self, request, pk):
         address = get_object_or_404(Address, pk=pk)
