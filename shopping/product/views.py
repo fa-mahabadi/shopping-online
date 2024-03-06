@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, TemplateView
 from .models import Product, Image, Category
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from django.views import View
 from rest_framework.views import APIView
@@ -13,10 +13,15 @@ from rest_framework import status
 
 
 def home(request):
-    return render(request, "index.html")
+    """show home page"""
+    newest_products = Product.objects.order_by('-created_at')[:3]
+    images = Image.objects.all()
+    return render(request, "index.html",{'newest_products': newest_products,"images":images})
 
 
 class ProductListView(ListView):
+    """product list view"""
+
     model = Product
     template_name = "product/product_list.html"
     context_object_name = "products"
@@ -28,6 +33,8 @@ class ProductListView(ListView):
 
 
 class ProductDetailView(DetailView):
+    """product detail view"""
+
     model = Product
     template_name = "product/product_detail.html"
     context_object_name = "product"
@@ -39,6 +46,8 @@ class ProductDetailView(DetailView):
 
 
 class WomanCategoryListView(ListView):
+    """woman category footer"""
+
     model = Product
     template_name = "category/woman_list.html"
     context_object_name = "products"
@@ -53,6 +62,8 @@ class WomanCategoryListView(ListView):
 
 
 class ManCategoryListView(ListView):
+    """man category footer"""
+
     model = Product
     template_name = "category/man_list.html"
     context_object_name = "products"
@@ -67,6 +78,8 @@ class ManCategoryListView(ListView):
 
 
 class ChildrenCategoryListView(ListView):
+    """child category footer"""
+
     model = Product
     template_name = "category/child_list.html"
     context_object_name = "products"
@@ -82,20 +95,17 @@ class ChildrenCategoryListView(ListView):
 
 
 class CategoryDetailView(DetailView):
+    """category detail that use in navbar"""
+
     model = Category
     template_name = "product/category_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.object
-        context["products"] = self.get_all_products(category)
+        context["products"] = Product.objects.filter(category=category)
+        context["images"] = Image.objects.all()
         return context
-
-    def get_all_products(self, category):
-        products = Category.objects.prefetch_related("products")
-        for subcategory in category.nested_category.all():
-            products |= self.get_all_products(subcategory)
-        return products
 
 
 class AddToCartView(View):
@@ -191,9 +201,11 @@ class UpdateQuantityView(View):
             )
 
 
-
-def category_products(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category)
-    print(category,products)
-    return render(request, 'category_products.html', {'category': category, 'products': products})
+def product_search(request):
+    """search product based name"""
+    query = request.GET.get("q")
+    products = Product.objects.filter(name__icontains=query) if query else []
+    images = Image.objects.all()
+    return render(
+        request, "product/search_results.html", {"products": products, "images": images}
+    )
