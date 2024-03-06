@@ -1,13 +1,10 @@
 from django.db import models
-from customer.models import MyUser
-from product.models import DiscountCode, Product
+from customer.models import MyUser,Address
+from product.models import DiscountCode, Product,Image
+from core.models import TimeStampModel,LogicalBaseModel,LogicalManager
 
-
-class Order(models.Model):
+class Order(TimeStampModel,LogicalBaseModel):
     STATUS_CHOICES = [
-        ("کارت", "کارت"),
-        ("پرداخت", "پرداخت"),
-        ("تسویه", "تسویه"),
         ("کارت", "کارت"),
         ("پرداخت", "پرداخت"),
         ("تسویه", "تسویه"),
@@ -16,9 +13,11 @@ class Order(models.Model):
     user = models.ForeignKey(
         MyUser, on_delete=models.CASCADE, related_name="orders", verbose_name="کاربر"
     )
+    address=models.ForeignKey(Address,on_delete=models.CASCADE, null=True,related_name="orders",verbose_name="آدرس ")
     discount_code = models.OneToOneField(
         DiscountCode,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         related_name="orders",
         verbose_name="کدتخفیف",
     )
@@ -26,13 +25,13 @@ class Order(models.Model):
         max_length=10, choices=STATUS_CHOICES, default="CART", verbose_name="وضعیت"
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
-
+    objects = LogicalManager()
     class Meta:
-        verbose_name_plural = "سفارشات"
-        verbose_name = "سفارش"
+        verbose_name_plural = " سفارشات  "
+        verbose_name = " سفارش"
+    
 
-
-class OrderItem(models.Model):
+class OrderItem(LogicalBaseModel,TimeStampModel):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -45,8 +44,14 @@ class OrderItem(models.Model):
         related_name="order_items",
         verbose_name="سفارش",
     )
-    quantity = models.IntegerField(default=1, verbose_name="تعداد")
-
+    quantity = models.IntegerField(default=1, verbose_name="تعداد سفارش")
+    objects = LogicalManager()
+    def get_product_image(self):
+        try:        
+            product_image = Image.objects.get(product_id=self.product.id).get_image_url()
+        except Image.DoesNotExist:
+            product_image = None
+        return product_image
     class Meta:
-        verbose_name_plural = "آیتم های سفارش"
+        verbose_name_plural = "آیتم های سفارش  "
         verbose_name = "آیتم سفارش"

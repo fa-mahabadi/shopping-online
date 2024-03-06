@@ -113,13 +113,19 @@ class OrderItemDetailAPIView(APIView):
         except OrderItem.DoesNotExist:
             raise Http404
 
+    def get(self, request, pk):
+        order_item = get_object_or_404(OrderItem, pk=pk)
+        serializer = OrderItemSerializer(order_item)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         order_item = self.get_object(pk)
-        serializer = OrderItemSerializer(order_item, data=request.data)
+        serializer = OrderItemSerializer(order_item, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
     def delete(self, request, pk):
         order_item = self.get_object(pk)
