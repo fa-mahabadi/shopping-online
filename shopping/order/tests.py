@@ -1,7 +1,7 @@
 from django.test import TestCase
 from .models import Order, OrderItem
 from customer.models import MyUser
-from product.models import DiscountCode,Discount,Category,Product
+from product.models import DiscountCode, Discount, Category, Product
 from django.utils import timezone
 
 
@@ -63,6 +63,6 @@ class OrderItemTest(TestCase):
         orderitem = OrderItem.objects.create(
             product=self.product, order=self.order, quantity=10
         )
-        self.assertEqual(orderitem.product,self.product)
-        self.assertEqual(orderitem.order,self.order)
-        self.assertEqual(orderitem.quantity,10)
+        self.assertEqual(orderitem.product, self.product)
+        self.assertEqual(orderitem.order, self.order)
+        self.assertEqual(orderitem.quantity, 10)

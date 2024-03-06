@@ -1,0 +1,147 @@
+
+{% extends 'base.html'%}
+{% load static %}
+{% block content %}<section class="bg-light">
+    <div class="container pb-5">
+        <div class="row">
+            <div class="col-lg-5 mt-5">
+                <div class="row">
+                    <!--Start Controls-->
+                    <div class="col-1 align-self-center">
+                        <a href="#multi-item-example" role="button" data-bs-slide="prev">
+                            <i class="text-dark fas fa-chevron-left"></i>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </div>
+                    <!--End Controls-->
+                    <!--Start Carousel Wrapper-->
+                    <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item" data-bs-ride="carousel">
+                        <!--Start Slides-->
+                                                <div class="carousel-inner product-links-wap" role="listbox">
+
+                        {% for image in images %}
+                        {% if image.product == product %}
+                            
+                            <!--First slide-->
+                            <div class="carousel-item active">
+                                <div class="row">
+                                
+                                    <div class="col-4">
+                                        <a href="#">
+                                            <img src="{{ image.image.url }}" alt="{{ product.name }} Image" width="400" height="600">
+                                
+                                        </a>
+                                    </div>
+                                  
+                                </div>
+                            </div>
+                            <!--/.First slide-->
+                            
+                        </div>
+                        {% endif %}
+                            {% endfor %}  
+                        <!--End Slides-->
+                    </div>
+                    <!--End Carousel Wrapper-->
+                    <!--Start Controls-->
+                    <div class="col-1 align-self-center">
+                        <a href="#multi-item-example" role="button" data-bs-slide="next">
+                            <i class="text-dark fas fa-chevron-right"></i>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                    <!--End Controls-->
+                </div>
+            </div>
+            <!-- col end -->
+            <div class="col-lg-7 mt-5" dir="rtl">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="h2">{{ product.name }}</h1>
+                        <p class="h3 py-2">{{ product.price }}</p>
+                        <p class="py-2">
+                            <i class="fa fa-star text-warning"></i>
+                            <i class="fa fa-star text-warning"></i>
+                            <i class="fa fa-star text-warning"></i>
+                            <i class="fa fa-star text-warning"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <span class="list-inline-item text-dark">امتیاز 4.8 | 36 دیدگاه</span>
+                        </p>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>برند:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.brand }}</strong></p>
+                            </li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>دسته بندی:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.category.name}} </strong></p>
+                            </li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>رنگ:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.color }}</strong></p>
+                            </li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>سایز:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.size}} </strong></p>
+                            </li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>موجودی:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.total_count}} </strong></p>
+                            </li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>تخفیف:</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{ product.discount.percentage}} %</strong></p>
+                            </li>
+                        </ul>
+                        
+
+
+                        <form action="{% url 'add_product_to_session' %}" method="POST">
+                            {% csrf_token %}
+                            <!-- Include hidden fields for product data -->
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="product_name" value="{{ product.name }}">
+                            <input type="hidden" name="product_price" value="{{ product.price }}">
+                            <input type="hidden" name="product_size" value="{{ product.size}}">
+                            <input type="hidden" name="product_color" value="{{ product.color }}">
+                            
+                            <!-- Add more hidden fields for other product data as needed -->
+                            
+                            <div class="row pb-3">
+                                <div class="col d-grid"></div>
+                                <div class="col d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg w-50 align-self-center" name="submit" value="addtocart">افزودن به کارت</button>
+                                </div>
+                            </div>
+                        </form>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

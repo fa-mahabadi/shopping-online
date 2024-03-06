@@ -166,8 +166,7 @@ class CommentTest(TestCase):
             content="this is test comment",
             email="user@email.com",
         )
-        self.assertEqual(comment.product,self.product)
-        self.assertIsNone(comment.reply_to,None)
-        self.assertEqual(comment.content,"this is test comment")
-        self.assertEqual(comment.email,"user@email.com")
-
+        self.assertEqual(comment.product, self.product)
+        self.assertIsNone(comment.reply_to, None)
+        self.assertEqual(comment.content, "this is test comment")
+        self.assertEqual(comment.email, "user@email.com")

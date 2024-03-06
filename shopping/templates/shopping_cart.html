@@ -1,0 +1,384 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه ترمه </title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/templatemo.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome.min.css' %}">
+    <!-- jquery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Set up jQuery to send CSRF tokens with AJAX requests
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                // Check if the request is cross-domain or not
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                }
+            }
+        });
+        $(document).ready(function () {
+            // Event listener for "Add Selected Address to Order" button
+            $('#add-selected-address-btn').click(function () {
+                var selectedAddress = $('#selected-address').val().trim();
+                var addressId = $('input[name="address-option"]:checked').data('address-id');
+                if (selectedAddress !== '' && addressId) {
+                    // Perform AJAX request to update order with selected address
+                    $.ajax({
+                        url: '/order/create/',  // Update this URL with your endpoint for updating orders
+                        type: 'PUT',
+                        data: {
+                            address_id: addressId,
+                            // address: selectedAddress
+                        },
+                        success: function (data) {
+                            alert('Address added to order successfully.');
+                            // You can perform additional actions here if needed
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error adding address to order:', error);
+                            alert('Error adding address to order. Please try again.');
+                        }
+                    });
+                } else {
+                    alert('Please select an address.');
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    {% include 'header.html' %}
+
+    <div class="container mt-5">
+        <div class="text-left">
+
+        <div class="row">
+
+            <div class="col-md-10">
+                <div class="col-md-10">
+                <h3 class="text-center">لیست سفارشات</h3>
+                <table class="table table-striped text-center">
+                    <thead class="thead-dark ">
+                        <tr>
+                            <th>تعداد</th>
+                            <th>محصول</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-item-list">
+                        <!-- Order items will be inserted here dynamically -->
+                    </tbody>
+                </table>
+                </div>
+                <hr>
+                <div id="address-list" class="m-4">
+                    <!-- Addresses will be inserted here dynamically -->
+                </div>
+
+                <!-- Textbox to display selected address -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- <h4 class="text-center">لیست و انتخاب آدرس</h4> -->
+                        <textarea id="selected-address" rows="2" class="form-control" readonly></textarea>
+                        <button id="add-selected-address-btn" class="btn btn-primary mt-2">اضافه کردن آدرس به
+                            سفارش</button>
+                    </div>
+                </div>
+
+
+                <hr>
+                <!-- <h4>آدرس جدید</h4> -->
+                <div id="new-address-form" class="mt-4">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="city">شهر:</label>
+                            <input type="text" id="city">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="province">استان:</label>
+                            <input type="text" id="province">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="detail">جزئیات:</label>
+                            <input type="text" id="detail">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="zipcode">کدپستی:</label>
+                            <input type="text" id="zipcode">
+                        </div>
+                    </div>
+                    <div class="row m-3 ">
+                        <div class="col-md-6">
+                            <button id="add-address-btn" class="btn btn-primary ">ثبت آدرس </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div>
+                    <h4 class="text-center">منوی کاربر</h4>
+                </div>
+                <div>
+                    <a href="{% url 'create_profile' %}" class="btn btn-info mt-2 custom-btn"
+                        style="width: 100%;">پروفایل کاربری</a>
+                </div>
+                <div>
+                    <a href="{% url 'order_history' %}" class="btn btn-info mt-2 custom-btn"
+                        style="width: 100%;">تاریخچه سفارش‌ها</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% include 'footer.html' %}
+
+        <script>
+            $(document).ready(function () {
+                fetchAddresses();
+
+
+                // Handle click on delete button
+                $(document).on('click', '.delete-address-btn', function () {
+                    var addressId = $(this).data('address-id');
+                    deleteAddress(addressId);
+                });
+
+                // Handle click on update button
+                $(document).on('click', '.update-address-btn', function () {
+                    var addressId = $(this).data('address-id');
+                    var addressContent = $('#address-' + addressId).text().trim();
+
+                    // Split the address content into its parts
+                    var addressParts = addressContent.split(/,\s+/);
+                    var city = addressParts[0];
+                    var provinceAndDetail = addressParts[1].split(/ - /);
+                    var province = provinceAndDetail[0];
+                    var detailAndZipcode = provinceAndDetail[1].split(/- /);
+                    var detail = detailAndZipcode[0];
+                    var zipcode = detailAndZipcode[1];
+
+                    // Send the updated address parts in the AJAX request
+                    updateAddress(addressId, city, province, detail, zipcode);
+                });
+
+                // Handle click on create new address button
+                $('#add-address-btn').click(function () {
+                    var city = $('#city').val();
+                    var province = $('#province').val();
+                    var detail = $('#detail').val();
+                    var zipcode = $('#zipcode').val(); // Retrieve zipcode value
+                    addAddress(city, province, detail, zipcode);
+                });
+
+                // Event listener for address option selection
+                $(document).on('change', 'input[name="address-option"]', function () {
+                    //var selectedAddress = $(this).next('.address-line').text().trim(); // Get the text content of the next sibling with class 'address-line'
+                    var selectedAddress = $(this).closest('.row').find('.address-line').text().trim(); // Find the address line within the same parent row
+                    $('#selected-address').val(selectedAddress); // Update the textarea value with selected address details
+                });
+            });
+
+            function fetchAddresses() {
+                $.ajax({
+                    url: '/customer/address/api/',
+                    type: 'GET',
+                    success: function (data) {
+                        var addressList = $('#address-list');
+                        addressList.empty();  // Clear previous content
+                        if (data.length > 0) {
+                            $.each(data, function (index, address) {
+                                var addressLine = `<div class="col-md-5"><span class="address-line" id="address-${address.id}" contenteditable="true">${address.city}, ${address.province} - ${address.detail}- ${address.zipcode}</span></div>`;
+                                //var deleteButton = `<button class="delete-address-btn btn-danger m-1" data-address-id="${address.id}">حذف</button>`;
+                                //var updateButton = `<button class="update-address-btn btn-primary" data-address-id="${address.id}">ویرایش</button>`;
+                                var deleteButton = `<div class="col-md-1"><button class="delete-address-btn btn btn-danger " data-address-id="${address.id}">حذف</button></div>`;
+                                var updateButton = `<div class="col-md-1"><button class="update-address-btn btn btn-primary" data-address-id="${address.id}">ویرایش</button></div>`;
+
+                                var optionButton = `<input type="radio" style="width: 2%;"" name="address-option" data-address-id="${address.id}">`; // Add option button
+                                addressList.append(`<div class="row m-1">${optionButton} ${addressLine} ${deleteButton} ${updateButton}</div>`);
+                            });
+                        } else {
+                            addressList.append('<div>No addresses found.</div>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching addresses:', error);
+                    }
+                });
+            }
+
+            function deleteAddress(addressId) {
+                $.ajax({
+                    url: `/customer/address/api/${addressId}/`,
+                    type: 'DELETE',
+                    success: function () {
+                        fetchAddresses();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting address:', error);
+                    }
+                });
+            }
+
+            function updateAddress(addressId, city, province, detail, zipcode) {
+                $.ajax({
+                    url: `/customer/address/api/${addressId}/`,
+                    type: 'PUT',
+                    data: {
+                        city: city,
+                        province: province,
+                        detail: detail,
+                        zipcode: zipcode
+                    },
+                    success: function (data) {
+                        fetchAddresses();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating address:', error);
+                    }
+                });
+            }
+
+            function addAddress(city, province, detail, zipcode) {
+                $.ajax({
+                    url: '/customer/address/api/',
+                    type: 'POST',
+                    data: {
+                        city: city,
+                        province: province,
+                        detail: detail,
+                        zipcode: zipcode
+                    },
+                    success: function () {
+                        fetchAddresses();
+                        $('#city').val('');
+                        $('#province').val('');
+                        $('#detail').val('');
+                        $('#zipcode').val('');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error adding address:', error);
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                fetchOrderItems();
+
+                // Function to fetch order items via AJAX
+                function fetchOrderItems() {
+                    $.ajax({
+                        url: '/order/items/', // Adjust this URL to your API endpoint
+                        type: 'GET',
+                        success: function (data) {
+                            var orderItemsList = $('#order-item-list');
+                            orderItemsList.empty();  // Clear previous content
+                            if (data.length > 0) {
+                                $.each(data, function (index, orderItem) {
+                                    var row = `<tr id="order-item-${orderItem.id}">
+                                            <td><input type="number" class="quantity-input" value="${orderItem.quantity}" data-order-item-id="${orderItem.id}"></td>
+                                            <td><img src="${orderItem.product_image}" alt="Product Image" style="max-width: 100px;"></td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm update-btn" data-order-item-id="${orderItem.id}">ویرایش</button>
+                                                <button class="btn btn-danger btn-sm delete-btn" data-order-item-id="${orderItem.id}">حذف</button>
+                                            </td>
+                                       </tr>`;
+                                    orderItemsList.append(row);
+                                });
+                                $(document).on('change', '.quantity-input', function () {
+                                    var orderItemId = $(this).data('order-item-id');
+                                    var newQuantity = $(this).val();
+                                    updateOrderItemQuantity(orderItemId, newQuantity);
+                                });
+                            } else {
+                                orderItemsList.append('<tr><td colspan="4">No order items found.</td></tr>');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching order items:', error);
+                        }
+                    });
+                }
+
+                // Handle click on delete button
+                $(document).on('click', '.delete-btn', function () {
+                    var orderItemId = $(this).data('order-item-id');
+                    deleteOrderItem(orderItemId);
+                });
+                function updateOrderItemQuantity(orderItemId, newQuantity) {
+                    $.ajax({
+                        url: `/order/items/${orderItemId}/`, // Adjust this URL to your API endpoint
+                        type: 'PUT',
+                        data: { quantity: newQuantity },
+                        success: function () {
+                            console.log('Order item quantity updated successfully.');
+                            // You can perform additional actions here if needed
+                            $('#order-item-' + orderItemId + ' .quantity-input').val(newQuantity);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error updating order item quantity:', error);
+                        }
+                    });
+                }
+
+                // Function to delete order item via AJAX
+                function deleteOrderItem(orderItemId) {
+                    $.ajax({
+                        url: `/order/items/${orderItemId}/`, // Adjust this URL to your API endpoint
+                        type: 'DELETE',
+                        success: function () {
+                            $('#order-item-' + orderItemId).remove(); // Remove the corresponding row from the table
+                            console.log('Order item deleted successfully.');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error deleting order item:', error);
+                        }
+                    });
+                }
+
+            });
+            function createOrder() {
+                fetch('/order/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if needed
+                    },
+                    body: JSON.stringify({})  // Include any data needed for the order creation
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Order created successfully');
+                        } else {
+                            console.error('Failed to create order');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Call createOrder function when the page loads or as needed
+            createOrder();
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container  p-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="text-center">ثبت نام</h4>
+                </div>
+                <div class="card-body text-center">
+                    <form method="post" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        <h2 class="text-center p-4"> ثبت نام کاربر </h2>
+                        <br>
+
+                        <div class="ml-auto">
+                            {% for field in form %}
+                            <div class="form-group row">
+                                <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{field.label_tag}}</label>
+                                <div class="col-sm-6">
+                                    {{ field }}
+                                    <br>
+                                    <br>
+                                    {% if field.errors %}
+                                    <small>{{ field.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary col-sm-4 p-2">ثبت نام</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
